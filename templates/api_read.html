@@ -1,0 +1,43 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="../static/app.js"></script>
+    <title>Overzicht Gebruikers</title>
+</head>
+
+<body>
+    <h1>Overzicht Gebruikers</h1>
+    <table border="1" id="gebruikerstabel">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Gebruikersnaam</th>
+                <th>Naam</th>
+                <th>Adres</th>
+                <th>Postcode</th>
+                <th>Geboortedatum</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <h1>Maak hier een nieuwe gebruiker aan:</h1>
+    <form method="post">
+        <label for="gebr">Gebruikersnaam:</label>
+        <input type="text" id="gebr" name="gebr"><br><br>
+        <label for="wach">Wachtwoord:</label>
+        <input type="password" id="wach" name="wach"><br><br>
+        <label for="naam">Naam:</label>
+        <input type="text" id="naam" name="naam"><br><br>
+        <label for="adre">Adres:</label>
+        <input type="text" id="adre" name="adre"><br><br>
+        <label for="post">Postcode:</label>
+        <input type="text" id="post" name="post"><br><br>
+        <label for="gebo">Geboortedatum:</label>
+        <input type="text" id="gebo" name="gebo"><br><br>
+        <input type="submit" id="newUser" value="Submit">
+    </form>
+</body>
+</html>

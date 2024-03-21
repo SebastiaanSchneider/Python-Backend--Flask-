@@ -1,0 +1,32 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gebruiker Wijzigen</title>
+</head>
+<body>
+    {% if check %}
+    <h1>Gebruiker {{ gebruiker[1] }} is successvol gewijzigd.</h1>
+    {% else %}
+    <h1>
+        Wijzig hier gebruiker {{ gebruiker[1] }}:
+    </h1>
+    <form method="post">
+        <label for="wach">Wachtwoord:</label>
+        <input type="password" id="wach" name="wach" value="{{ gebruiker[2] }}"><br><br>
+        <label for="naam">Naam:</label>
+        <input type="text" id="naam" name="naam" value="{{ gebruiker[3] }}"><br><br>
+        <label for="adre">Adres:</label>
+        <input type="text" id="adre" name="adre" value="{{ gebruiker[4] }}"><br><br>
+        <label for="post">Postcode:</label>
+        <input type="text" id="post" name="post" value="{{ gebruiker[5] }}"><br><br>
+        <label for="gebo">Geboortedatum:</label>
+        <input type="text" id="gebo" name="gebo" value="{{ gebruiker[6] }}"><br><br>
+        <input type="submit" value="Submit">
+    </form>
+    {% endif %}
+    <p>
+        <a href="{{ url_for('read') }}">Terug naar het overzicht</a>
+    </p>
+</body>
+</html>

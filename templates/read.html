@@ -1,0 +1,60 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Overzicht Gebruikers</title>
+</head>
+<body>
+    <h1>Overzicht Gebruikers</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Gebruikersnaam</th>
+                <th>Naam</th>
+                <th>Adres</th>
+                <th>Postcode</th>
+                <th>Geboortedatum</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for gebruiker in gebruikers %}
+            <tr>
+                <td>{{ gebruiker[0] }}</td>
+                <td>{{ gebruiker[1] }}</td>
+                <td>{{ gebruiker[3] }}</td>
+                <td>{{ gebruiker[4] }}</td>
+                <td>{{ gebruiker[5] }}</td>
+                <td>{{ gebruiker[6] }}</td>
+                <td>
+                    <a href="{{ url_for('update', gebruiker_id=gebruiker[0]) }}">
+                        Wijzigen
+                    </a>
+                </td>
+                <td>
+                    <a href="{{ url_for('delete', gebruiker_id=gebruiker[0]) }}">
+                        Verwijderen
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <h1>Maak hier een nieuwe gebruiker aan:</h1>
+    <form method="post">
+        <label for="gebr">Gebruikersnaam:</label>
+        <input type="text" id="gebr" name="gebr"><br><br>
+        <label for="wach">Wachtwoord:</label>
+        <input type="password" id="wach" name="wach"><br><br>
+        <label for="naam">Naam:</label>
+        <input type="text" id="naam" name="naam"><br><br>
+        <label for="adre">Adres:</label>
+        <input type="text" id="adre" name="adre"><br><br>
+        <label for="post">Postcode:</label>
+        <input type="text" id="post" name="post"><br><br>
+        <label for="gebo">Geboortedatum:</label>
+        <input type="text" id="gebo" name="gebo"><br><br>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
