@@ -221,26 +221,21 @@ def api_update():
 
 @app.route('/api/create', methods=['GET', 'POST'])
 def api_create():
-    print("aangeroepen")
     db = krijg_database()
     
     if request.method == "POST":
-        print("is post")
         gebr2 = request.form.get("gebr")
         wach2 = request.form.get("wach")
         naam2 = request.form.get("naam")
         adre2 = request.form.get("adre")
         post2 = request.form.get("post")
         gebo2 = request.form.get("gebo")
-        print(gebr2)
         
         check = db.execute('SELECT EXISTS(SELECT 1 FROM gebruikers WHERE gebruikersnaam=?)', (gebr2, )).fetchone()
 
         if check == (1,):
-            print("check == 1")
             return render_template("api_read.html", error=gebr2)
         else:
-            print("submit dingen")
             db.cursor().execute("""
                                 INSERT INTO gebruikers(gebruikersnaam, wachtwoord, 
                                 naam, adres, postcode, geboortedatum) 
@@ -248,7 +243,6 @@ def api_create():
                                 ([gebr2, wach2, naam2, adre2, post2, gebo2]))
             db.commit()
             return render_template("api_read.html")
-    print("anders")
     return render_template("api_read.html")
 
 
