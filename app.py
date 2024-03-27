@@ -54,8 +54,10 @@ def index():
 def create():
     db = krijg_database()
 
+    # Verwerking van nieuwe gebruiker
     if request.method == "POST":
 
+        # Opzet nieuwe gebruiker
         gebr2 = request.form.get("gebr")
         wach2 = request.form.get("wach")
         naam2 = request.form.get("naam")
@@ -63,10 +65,12 @@ def create():
         post2 = request.form.get("post")
         gebo2 = request.form.get("gebo")
 
+        # Check of gebruikersnaam niet bestaat en voeg nieuwe gebruiker toe
+        # met sqlite
         check = db.execute('''SELECT EXISTS(SELECT 1 FROM gebruikers
                            WHERE gebruikersnaam=?)''', (gebr2, )).fetchone()
-
         if check == (1,):
+            # Weergave Create pagina met error
             return render_template("create.html", error=gebr2)
         else:
             db.cursor().execute("""
@@ -75,8 +79,9 @@ def create():
                                 geboortedatum) VALUES(?, ?, ?, ?, ?, ?)""",
                                 ([gebr2, wach2, naam2, adre2, post2, gebo2]))
             db.commit()
+            # Weergave Create pagina met melding
             return render_template("create.html", gebruiker=gebr2)
-
+    # Weergave Create pagina zonder input
     return render_template("create.html")
 
 # Route voor Read, het overzicht van alle gebruiker en bewerkingsopties
@@ -84,12 +89,12 @@ def create():
 def read():
     # Maak verbinding met de database
     db = krijg_database()
-
-    # Voer een query uit
     resultaat = db.execute('SELECT * FROM gebruikers').fetchall()
 
+    # Verwerking van nieuwe gebruiker
     if request.method == "POST":
 
+        # Opzet nieuwe gebruiker
         gebr2 = request.form.get("gebr")
         wach2 = request.form.get("wach")
         naam2 = request.form.get("naam")
@@ -97,10 +102,12 @@ def read():
         post2 = request.form.get("post")
         gebo2 = request.form.get("gebo")
 
+        # Check of gebruikersnaam niet bestaat en voeg nieuwe gebruiker toe
+        # met sqlite
         check = db.execute('''SELECT EXISTS(SELECT 1 FROM gebruikers
                            WHERE gebruikersnaam=?)''', (gebr2, )).fetchone()
-
         if check == (1,):
+            # Weergave Create pagina met error
             return render_template("create.html", error=gebr2)
         else:
             db.cursor().execute("""INSERT INTO gebruikers(gebruikersnaam,
@@ -108,9 +115,9 @@ def read():
                                 geboortedatum) VALUES(?, ?, ?, ?, ?, ?)""",
                                 ([gebr2, wach2, naam2, adre2, post2, gebo2]))
             db.commit()
+            # Weergave Create pagina
             return render_template("create.html", gebruiker=gebr2)
-
-    # Resultaten weergeven
+    # Resultaten weergeven zonder input
     return render_template("read.html", gebruikers=resultaat)
 
 # Route voor Update, pagina om een specifieke gebruiker aan te passen
@@ -120,14 +127,17 @@ def update(gebruiker_id):
     gebruiker = db.execute('SELECT * FROM gebruikers WHERE id=?',
                            (gebruiker_id, )).fetchone()
 
+    # Verwerking van geüpdatete gebruiker
     if request.method == "POST":
 
+        # Opzet nieuwe gebruiker
         wach2 = request.form.get("wach")
         naam2 = request.form.get("naam")
         adre2 = request.form.get("adre")
         post2 = request.form.get("post")
         gebo2 = request.form.get("gebo")
 
+        # Update nieuwe gegevens gebruiker in database met sqlite
         db.cursor().execute("""
                             UPDATE gebruikers
                             SET wachtwoord=?, naam=?, adres=?, postcode=?, 
@@ -137,8 +147,9 @@ def update(gebruiker_id):
                                    gebruiker_id]))
         db.commit()
         check = TRUE
+        # Weergave update pagina met melding
         return render_template("update.html", gebruiker=gebruiker, check=check)
-
+    # Weergave update pagina zonder input
     return render_template("update.html", gebruiker=gebruiker,
                            gebruiker_id=gebruiker_id)
 
@@ -149,9 +160,11 @@ def delete(gebruiker_id):
     gebruiker = db.execute('SELECT * FROM gebruikers WHERE id=?',
                            (gebruiker_id, )).fetchone()
 
+    # Verwijder de gebruiker met sqlite
     db.cursor().execute('DELETE FROM gebruikers WHERE id=?', (gebruiker_id, ))
     db.commit()
 
+    # Weergave nieuwe pagina met melding
     return render_template("delete.html", gebruiker=gebruiker)
 
 # Functie om de database als json te kunnen gebruiken
@@ -170,6 +183,7 @@ def api_create():
     db = krijg_database()
 
     if request.method == "POST":
+        # Opzet nieuwe gebruiker
         gebr2 = request.form.get("gebr")
         wach2 = request.form.get("wach")
         naam2 = request.form.get("naam")
@@ -177,10 +191,12 @@ def api_create():
         post2 = request.form.get("post")
         gebo2 = request.form.get("gebo")
 
+        # Check of gebruikersnaam niet bestaat en voeg nieuwe gebruiker toe
+        # met sqlite
         check = db.execute('''SELECT EXISTS(SELECT 1 FROM gebruikers
                            WHERE gebruikersnaam=?)''', (gebr2, )).fetchone()
-
         if check == (1,):
+            # Ververs pagina met error
             return render_template("api_read.html", error=gebr2)
         else:
             db.cursor().execute("""
@@ -189,7 +205,9 @@ def api_create():
                                 geboortedatum) VALUES(?, ?, ?, ?, ?, ?)""",
                                 ([gebr2, wach2, naam2, adre2, post2, gebo2]))
             db.commit()
+            # Ververs de pagina
             return render_template("api_read.html")
+    # Ververs de pagina
     return render_template("api_read.html")
 
 # SPA versie van Read, het overzicht van alle gebruikers
@@ -201,41 +219,38 @@ def api_read():
     # Voer een query uit
     resultaat = db.execute('SELECT * FROM gebruikers').fetchall()
 
-    print("aangeroepen")
-
     if request.method == "POST":
-        print("is post")
+        # Opzet nieuwe gebruiker
         gebr2 = request.form.get("gebr")
         wach2 = request.form.get("wach")
         naam2 = request.form.get("naam")
         adre2 = request.form.get("adre")
         post2 = request.form.get("post")
         gebo2 = request.form.get("gebo")
-        print(gebr2)
 
+        # Check of gebruikersnaam niet bestaat en voeg nieuwe gebruiker toe
+        # met sqlite
         check = db.execute('''SELECT EXISTS(SELECT 1 FROM gebruikers
                            WHERE gebruikersnaam=?)''', (gebr2, )).fetchone()
-
         if check == (1,):
-            print("check == 1")
+            # Ververs pagina met error
             return render_template("api_read.html", error=gebr2)
         else:
-            print("submit dingen")
             db.cursor().execute("""
                                 INSERT INTO gebruikers(gebruikersnaam, 
                                 wachtwoord, naam, adres, postcode, 
                                 geboortedatum) VALUES(?, ?, ?, ?, ?, ?)""",
                                 ([gebr2, wach2, naam2, adre2, post2, gebo2]))
             db.commit()
+            # Ververs de pagina
             return render_template("api_read.html")
-    print("anders")
-    # Resultaten weergeven
+    # Ververs de pagina
     return render_template("api_read.html", gebruikers=resultaat)
 
 # SPA versie van Update, om een specifieke gebruiker aan te passen
 @app.route('/api/update', methods=['POST'])
 def api_update():
-
+    # Update nieuwe gegevens gebruiker in database met sqlite
     if request.method == "POST":
         data = request.json['data']
         db = krijg_database()
@@ -249,11 +264,13 @@ def api_update():
                                    data["id"]]))
         db.commit()
         check = TRUE
+    # Ververs de pagina
     return render_template("api_read.html", check=check)
 
 # SPA versie van delete, om gebruikers te verwijderen
 @app.route('/api/delete/<gebruiker_id>')
 def gebruiker_delete(gebruiker_id):
+    # Verwijder de gebruiker met sqlite
     db = krijg_database()
     db.cursor().execute('DELETE FROM gebruikers WHERE id=?',
                         (gebruiker_id, ))

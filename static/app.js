@@ -28,7 +28,7 @@ function toonGebruikersData(gebruikers) {
             <td>${gebruiker.geboortedatum}</td>
             <td>
                 <button onclick="wijzigGebruikersData(${gebruiker.id})">Wijzigen</button>
-                <button onclick="verwijderGebruiker(${gebruiker.id})">Verwijderen</button>
+                <button onclick="verwijderGebruiker(${gebruiker.id}); location.reload()">Verwijderen</button>
             </td>
         `;
         tabelBody.appendChild(rij);
