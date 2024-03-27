@@ -164,7 +164,7 @@ def gebruikers():
                    'geboortedatum': row[6]} for row in resultaat]
     return jsonify(users_list)
 
-# API versie van Create, om nieuwe gebruikers aan te maken
+# SPA versie van Create, om nieuwe gebruikers aan te maken
 @app.route('/api/create', methods=['GET', 'POST'])
 def api_create():
     db = krijg_database()
@@ -192,7 +192,7 @@ def api_create():
             return render_template("api_read.html")
     return render_template("api_read.html")
 
-# API versie van Read, het overzicht van alle gebruikers
+# SPA versie van Read, het overzicht van alle gebruikers
 @app.route('/api/read', methods=['GET', 'POST'])
 def api_read():
     # Maak verbinding met de database
@@ -232,7 +232,7 @@ def api_read():
     # Resultaten weergeven
     return render_template("api_read.html", gebruikers=resultaat)
 
-# API versie van Update, om een specifieke gebruiker aan te passen
+# SPA versie van Update, om een specifieke gebruiker aan te passen
 @app.route('/api/update', methods=['POST'])
 def api_update():
 
@@ -251,7 +251,7 @@ def api_update():
         check = TRUE
     return render_template("api_read.html", check=check)
 
-# API versie van delete, om gebruikers te verwijderen
+# SPA versie van delete, om gebruikers te verwijderen
 @app.route('/api/delete/<gebruiker_id>')
 def gebruiker_delete(gebruiker_id):
     db = krijg_database()
