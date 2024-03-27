@@ -1,8 +1,7 @@
 """Flask app voor simpele gebruikers database"""
 import sqlite3
 from pickle import TRUE
-from flask import Flask, g, jsonify, render_template, request
-
+from flask import Flask, flash, g, jsonify, render_template, request
 
 
 app = Flask(__name__, '/static')
@@ -10,9 +9,10 @@ app = Flask(__name__, '/static')
 # Configuratie van de database-locatie
 DATABASE = 'mijn_database.db'
 
-# Een tabel maken
+# Maakt de verbinding als variabel bruikbaar
 conn = sqlite3.connect('mijn_database.db')
 
+# Maakt een tabel aan
 conn.cursor().execute('''
     CREATE TABLE IF NOT EXISTS gebruikers (
         id INTEGER PRIMARY KEY,
@@ -38,17 +38,18 @@ def krijg_database():
 # Applicatie teardown om de databaseverbinding te sluiten bij afsluiting
 @app.teardown_appcontext
 def sluit_database(error):
+    if error:
+        flash("Something went wrong")
     if hasattr(g, 'database'):
         g.database.close()
 
 
-# Route voor het ophalen van gegevens uit de database
+# Route voor de index pagina, refereert naar Read
 @app.route('/', methods=['GET', 'POST'])
 def index():
     return read()
 
-
-# Route voor Create, pagina om een nieuwe gebruiken aan te maken
+# Route voor Create, pagina om een nieuwe gebruiker aan te maken
 @app.route('/create', methods=['GET', 'POST'])
 def create():
     db = krijg_database()
@@ -78,8 +79,7 @@ def create():
 
     return render_template("create.html")
 
-
-# Route voor Read, het overzicht van alle gebruiken en bewerkingsopties
+# Route voor Read, het overzicht van alle gebruiker en bewerkingsopties
 @app.route('/"read"', methods=['GET', 'POST'])
 def read():
     # Maak verbinding met de database
@@ -103,7 +103,7 @@ def read():
         if check == (1,):
             return render_template("create.html", error=gebr2)
         else:
-            db.cursor().execute("""INSERT INTO gebruikers(gebruikersnaam, 
+            db.cursor().execute("""INSERT INTO gebruikers(gebruikersnaam,
                                 wachtwoord, naam, adres, postcode, 
                                 geboortedatum) VALUES(?, ?, ?, ?, ?, ?)""",
                                 ([gebr2, wach2, naam2, adre2, post2, gebo2]))
@@ -113,8 +113,7 @@ def read():
     # Resultaten weergeven
     return render_template("read.html", gebruikers=resultaat)
 
-
-# Route voor Update, pagina om een specifieke gebruiken aan te passen
+# Route voor Update, pagina om een specifieke gebruiker aan te passen
 @app.route('/update/<gebruiker_id>', methods=['GET', 'POST'])
 def update(gebruiker_id):
     db = krijg_database()
@@ -143,7 +142,6 @@ def update(gebruiker_id):
     return render_template("update.html", gebruiker=gebruiker,
                            gebruiker_id=gebruiker_id)
 
-
 # Route voor Delete, een melding dat een gebruiker succesvol is verwijderd
 @app.route('/delete/<gebruiker_id>')
 def delete(gebruiker_id):
@@ -156,7 +154,45 @@ def delete(gebruiker_id):
 
     return render_template("delete.html", gebruiker=gebruiker)
 
+# Functie om de database als json te kunnen gebruiken
+@app.route('/api/gebruikers')
+def gebruikers():
+    db = krijg_database()
+    resultaat = db.execute('SELECT * FROM gebruikers').fetchall()
+    users_list = [{'id': row[0], 'gebruikersnaam': row[1], 'wachtwoord': row[2],
+                   'naam': row[3], 'adres': row[4], 'postcode': row[5],
+                   'geboortedatum': row[6]} for row in resultaat]
+    return jsonify(users_list)
 
+# API versie van Create, om nieuwe gebruikers aan te maken
+@app.route('/api/create', methods=['GET', 'POST'])
+def api_create():
+    db = krijg_database()
+
+    if request.method == "POST":
+        gebr2 = request.form.get("gebr")
+        wach2 = request.form.get("wach")
+        naam2 = request.form.get("naam")
+        adre2 = request.form.get("adre")
+        post2 = request.form.get("post")
+        gebo2 = request.form.get("gebo")
+
+        check = db.execute('''SELECT EXISTS(SELECT 1 FROM gebruikers
+                           WHERE gebruikersnaam=?)''', (gebr2, )).fetchone()
+
+        if check == (1,):
+            return render_template("api_read.html", error=gebr2)
+        else:
+            db.cursor().execute("""
+                                INSERT INTO gebruikers(gebruikersnaam, 
+                                wachtwoord, naam, adres, postcode, 
+                                geboortedatum) VALUES(?, ?, ?, ?, ?, ?)""",
+                                ([gebr2, wach2, naam2, adre2, post2, gebo2]))
+            db.commit()
+            return render_template("api_read.html")
+    return render_template("api_read.html")
+
+# API versie van Read, het overzicht van alle gebruikers
 @app.route('/api/read', methods=['GET', 'POST'])
 def api_read():
     # Maak verbinding met de database
@@ -194,29 +230,9 @@ def api_read():
             return render_template("api_read.html")
     print("anders")
     # Resultaten weergeven
-    return render_template("api_read.html", gebruikers = resultaat)
+    return render_template("api_read.html", gebruikers=resultaat)
 
-
-@app.route('/api/delete/<gebruiker_id>')
-def gebruiker_delete(gebruiker_id):
-    db = krijg_database()
-    db.cursor().execute('DELETE FROM gebruikers WHERE id=?',
-                        (gebruiker_id, ))
-    db.commit()
-
-    return '{"status" : "ok", "id" : ' + gebruiker_id + '}'
-
-
-@app.route('/api/gebruikers')
-def gebruikers():
-    db = krijg_database()
-    resultaat = db.execute('SELECT * FROM gebruikers').fetchall()
-    users_list = [{'id': row[0], 'gebruikersnaam': row[1], 'wachtwoord': row[2],
-                   'naam': row[3], 'adres': row[4], 'postcode': row[5],
-                   'geboortedatum': row[6]} for row in resultaat]
-    return jsonify(users_list)
-
-
+# API versie van Update, om een specifieke gebruiker aan te passen
 @app.route('/api/update', methods=['POST'])
 def api_update():
 
@@ -235,33 +251,15 @@ def api_update():
         check = TRUE
     return render_template("api_read.html", check=check)
 
-
-@app.route('/api/create', methods=['GET', 'POST'])
-def api_create():
+# API versie van delete, om gebruikers te verwijderen
+@app.route('/api/delete/<gebruiker_id>')
+def gebruiker_delete(gebruiker_id):
     db = krijg_database()
-
-    if request.method == "POST":
-        gebr2 = request.form.get("gebr")
-        wach2 = request.form.get("wach")
-        naam2 = request.form.get("naam")
-        adre2 = request.form.get("adre")
-        post2 = request.form.get("post")
-        gebo2 = request.form.get("gebo")
-
-        check = db.execute('''SELECT EXISTS(SELECT 1 FROM gebruikers
-                           WHERE gebruikersnaam=?)''', (gebr2, )).fetchone()
-
-        if check == (1,):
-            return render_template("api_read.html", error=gebr2)
-        else:
-            db.cursor().execute("""
-                                INSERT INTO gebruikers(gebruikersnaam, 
-                                wachtwoord, naam, adres, postcode, 
-                                geboortedatum) VALUES(?, ?, ?, ?, ?, ?)""",
-                                ([gebr2, wach2, naam2, adre2, post2, gebo2]))
-            db.commit()
-            return render_template("api_read.html")
-    return render_template("api_read.html")
+    db.cursor().execute('DELETE FROM gebruikers WHERE id=?',
+                        (gebruiker_id, ))
+    db.commit()
+    flash('Gebruiker ' + gebruiker_id + 'succesvol verwijderd')
+    return '{"status" : "ok", "id" : ' + gebruiker_id + '}'
 
 
 if __name__ == '__main__':
