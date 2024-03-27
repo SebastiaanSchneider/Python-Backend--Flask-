@@ -1,6 +1,8 @@
+"""Flask app voor simpele gebruikers database"""
+import sqlite3
 from pickle import TRUE
 from flask import Flask, g, jsonify, render_template, request
-import sqlite3
+
 
 
 app = Flask(__name__, '/static')
@@ -45,13 +47,14 @@ def sluit_database(error):
 def index():
     return read()
 
+
 # Route voor Create, pagina om een nieuwe gebruiken aan te maken
 @app.route('/create', methods=['GET', 'POST'])
 def create():
     db = krijg_database()
-    
+
     if request.method == "POST":
-        
+
         gebr2 = request.form.get("gebr")
         wach2 = request.form.get("wach")
         naam2 = request.form.get("naam")
@@ -59,20 +62,22 @@ def create():
         post2 = request.form.get("post")
         gebo2 = request.form.get("gebo")
 
-        check = db.execute('SELECT EXISTS(SELECT 1 FROM gebruikers WHERE gebruikersnaam=?)', (gebr2, )).fetchone()
+        check = db.execute('''SELECT EXISTS(SELECT 1 FROM gebruikers
+                           WHERE gebruikersnaam=?)''', (gebr2, )).fetchone()
 
         if check == (1,):
             return render_template("create.html", error=gebr2)
         else:
             db.cursor().execute("""
-                                INSERT INTO gebruikers(gebruikersnaam, wachtwoord, 
-                                naam, adres, postcode, geboortedatum) 
-                                VALUES(?, ?, ?, ?, ?, ?)""", 
+                                INSERT INTO gebruikers(gebruikersnaam, 
+                                wachtwoord, naam, adres, postcode, 
+                                geboortedatum) VALUES(?, ?, ?, ?, ?, ?)""",
                                 ([gebr2, wach2, naam2, adre2, post2, gebo2]))
             db.commit()
             return render_template("create.html", gebruiker=gebr2)
-    
+
     return render_template("create.html")
+
 
 # Route voor Read, het overzicht van alle gebruiken en bewerkingsopties
 @app.route('/"read"', methods=['GET', 'POST'])
@@ -84,7 +89,7 @@ def read():
     resultaat = db.execute('SELECT * FROM gebruikers').fetchall()
 
     if request.method == "POST":
-        
+
         gebr2 = request.form.get("gebr")
         wach2 = request.form.get("wach")
         naam2 = request.form.get("naam")
@@ -92,14 +97,15 @@ def read():
         post2 = request.form.get("post")
         gebo2 = request.form.get("gebo")
 
-        check = db.execute('SELECT EXISTS(SELECT 1 FROM gebruikers WHERE gebruikersnaam=?)', (gebr2, )).fetchone()
+        check = db.execute('''SELECT EXISTS(SELECT 1 FROM gebruikers
+                           WHERE gebruikersnaam=?)''', (gebr2, )).fetchone()
 
         if check == (1,):
             return render_template("create.html", error=gebr2)
         else:
-            db.cursor().execute("""INSERT INTO gebruikers(gebruikersnaam, wachtwoord, 
-                                naam, adres, postcode, geboortedatum) 
-                                VALUES(?, ?, ?, ?, ?, ?)""", 
+            db.cursor().execute("""INSERT INTO gebruikers(gebruikersnaam, 
+                                wachtwoord, naam, adres, postcode, 
+                                geboortedatum) VALUES(?, ?, ?, ?, ?, ?)""",
                                 ([gebr2, wach2, naam2, adre2, post2, gebo2]))
             db.commit()
             return render_template("create.html", gebruiker=gebr2)
@@ -107,14 +113,16 @@ def read():
     # Resultaten weergeven
     return render_template("read.html", gebruikers=resultaat)
 
+
 # Route voor Update, pagina om een specifieke gebruiken aan te passen
 @app.route('/update/<gebruiker_id>', methods=['GET', 'POST'])
 def update(gebruiker_id):
     db = krijg_database()
-    gebruiker = db.execute('SELECT * FROM gebruikers WHERE id=?', (gebruiker_id, )).fetchone()
+    gebruiker = db.execute('SELECT * FROM gebruikers WHERE id=?',
+                           (gebruiker_id, )).fetchone()
 
     if request.method == "POST":
-        
+
         wach2 = request.form.get("wach")
         naam2 = request.form.get("naam")
         adre2 = request.form.get("adre")
@@ -126,18 +134,22 @@ def update(gebruiker_id):
                             SET wachtwoord=?, naam=?, adres=?, postcode=?, 
                             geboortedatum=?
                             WHERE id=?
-                            """, ([wach2, naam2, adre2, post2, gebo2, gebruiker_id]))
+                            """, ([wach2, naam2, adre2, post2, gebo2,
+                                   gebruiker_id]))
         db.commit()
         check = TRUE
         return render_template("update.html", gebruiker=gebruiker, check=check)
 
-    return render_template("update.html", gebruiker=gebruiker, gebruiker_id=gebruiker_id)
+    return render_template("update.html", gebruiker=gebruiker,
+                           gebruiker_id=gebruiker_id)
+
 
 # Route voor Delete, een melding dat een gebruiker succesvol is verwijderd
 @app.route('/delete/<gebruiker_id>')
 def delete(gebruiker_id):
     db = krijg_database()
-    gebruiker = db.execute('SELECT * FROM gebruikers WHERE id=?', (gebruiker_id, )).fetchone()
+    gebruiker = db.execute('SELECT * FROM gebruikers WHERE id=?',
+                           (gebruiker_id, )).fetchone()
 
     db.cursor().execute('DELETE FROM gebruikers WHERE id=?', (gebruiker_id, ))
     db.commit()
@@ -154,7 +166,7 @@ def api_read():
     resultaat = db.execute('SELECT * FROM gebruikers').fetchall()
 
     print("aangeroepen")
-    
+
     if request.method == "POST":
         print("is post")
         gebr2 = request.form.get("gebr")
@@ -164,8 +176,9 @@ def api_read():
         post2 = request.form.get("post")
         gebo2 = request.form.get("gebo")
         print(gebr2)
-        
-        check = db.execute('SELECT EXISTS(SELECT 1 FROM gebruikers WHERE gebruikersnaam=?)', (gebr2, )).fetchone()
+
+        check = db.execute('''SELECT EXISTS(SELECT 1 FROM gebruikers
+                           WHERE gebruikersnaam=?)''', (gebr2, )).fetchone()
 
         if check == (1,):
             print("check == 1")
@@ -173,9 +186,9 @@ def api_read():
         else:
             print("submit dingen")
             db.cursor().execute("""
-                                INSERT INTO gebruikers(gebruikersnaam, wachtwoord, 
-                                naam, adres, postcode, geboortedatum) 
-                                VALUES(?, ?, ?, ?, ?, ?)""", 
+                                INSERT INTO gebruikers(gebruikersnaam, 
+                                wachtwoord, naam, adres, postcode, 
+                                geboortedatum) VALUES(?, ?, ?, ?, ?, ?)""",
                                 ([gebr2, wach2, naam2, adre2, post2, gebo2]))
             db.commit()
             return render_template("api_read.html")
@@ -183,46 +196,55 @@ def api_read():
     # Resultaten weergeven
     return render_template("api_read.html", gebruikers = resultaat)
 
+
 @app.route('/api/delete/<gebruiker_id>')
 def gebruiker_delete(gebruiker_id):
     db = krijg_database()
-    gebruiker = db.execute('SELECT * FROM gebruikers WHERE id=?', (gebruiker_id, )).fetchone()
+    gebruiker = db.execute('SELECT * FROM gebruikers WHERE id=?',
+                           (gebruiker_id, )).fetchone()
 
-    db.cursor().execute('DELETE FROM gebruikers WHERE id=?', (gebruiker_id, ))
+    db.cursor().execute('DELETE FROM gebruikers WHERE id=?',
+                        (gebruiker_id, ))
     db.commit()
 
     return '{"status" : "ok", "id" : ' + gebruiker_id + '}'
+
 
 @app.route('/api/gebruikers')
 def gebruikers():
     db = krijg_database()
     resultaat = db.execute('SELECT * FROM gebruikers').fetchall()
-    users_list = [{'id': row[0], 'gebruikersnaam': row[1], 'wachtwoord': row[2], 'naam': row[3], 'adres': row[4], 'postcode': row[5], 'geboortedatum': row[6]} for row in resultaat]
+    users_list = [{'id': row[0], 'gebruikersnaam': row[1], 'wachtwoord': row[2],
+                   'naam': row[3], 'adres': row[4], 'postcode': row[5],
+                   'geboortedatum': row[6]} for row in resultaat]
     return jsonify(users_list)
+
 
 @app.route('/api/update', methods=['POST'])
 def api_update():
 
     if request.method == "POST":
         data = request.json['data']
-        # print(data["naam"])
         db = krijg_database()
-        gebruiker = db.execute('SELECT * FROM gebruikers WHERE id=?', (data["id"], )).fetchone()
-        # print(data)
+        gebruiker = db.execute('SELECT * FROM gebruikers WHERE id=?',
+                               (data["id"], )).fetchone()
         db.cursor().execute("""
                             UPDATE gebruikers
                             SET naam=?, adres=?, postcode=?, 
                             geboortedatum=?
                             WHERE id=?
-                            """, ([data["naam"], data["adres"], data["postcode"], data["geboortedatum"], data["id"]]))
+                            """, ([data["naam"], data["adres"],
+                                   data["postcode"], data["geboortedatum"],
+                                   data["id"]]))
         db.commit()
         check = TRUE
     return render_template("api_read.html", check=check)
 
+
 @app.route('/api/create', methods=['GET', 'POST'])
 def api_create():
     db = krijg_database()
-    
+
     if request.method == "POST":
         gebr2 = request.form.get("gebr")
         wach2 = request.form.get("wach")
@@ -230,16 +252,17 @@ def api_create():
         adre2 = request.form.get("adre")
         post2 = request.form.get("post")
         gebo2 = request.form.get("gebo")
-        
-        check = db.execute('SELECT EXISTS(SELECT 1 FROM gebruikers WHERE gebruikersnaam=?)', (gebr2, )).fetchone()
+
+        check = db.execute('''SELECT EXISTS(SELECT 1 FROM gebruikers
+                           WHERE gebruikersnaam=?)''', (gebr2, )).fetchone()
 
         if check == (1,):
             return render_template("api_read.html", error=gebr2)
         else:
             db.cursor().execute("""
-                                INSERT INTO gebruikers(gebruikersnaam, wachtwoord, 
-                                naam, adres, postcode, geboortedatum) 
-                                VALUES(?, ?, ?, ?, ?, ?)""", 
+                                INSERT INTO gebruikers(gebruikersnaam, 
+                                wachtwoord, naam, adres, postcode, 
+                                geboortedatum) VALUES(?, ?, ?, ?, ?, ?)""",
                                 ([gebr2, wach2, naam2, adre2, post2, gebo2]))
             db.commit()
             return render_template("api_read.html")

@@ -16,8 +16,6 @@ function toonGebruikersData(gebruikers) {
     const tabelBody = document.querySelector('#gebruikerstabel tbody');
     tabelBody.innerHTML = '';
 
-    // console.log(gebruikers);
-    // console.log(gebruikers[0]);
 
     gebruikers.forEach(gebruiker => {
         const rij = document.createElement('tr');
@@ -35,7 +33,7 @@ function toonGebruikersData(gebruikers) {
         `;
         tabelBody.appendChild(rij);
     });
-    // console.log("End toonGebruikersData");
+
     console.log(document.getElementById("newUser"));
 };
 
@@ -62,16 +60,12 @@ var wijzigCheck = 0
 
 function wijzigGebruikerSetup(gebruikers, gebruikerId) {
   // Implementeer logica voor het wijzigen van een gebruiker via AJAX
-  // console.log("wijzigCheck: " + wijzigCheck);
 
   var gebruiker = gebruikers[gebruikerId - 1];
 
   var data;
 
-  // console.log(gebruikerId);
-  // console.log(gebruikers);
   console.log(gebruiker);
-  // console.log(gebruiker.gebruikersnaam);
 
   const tabelBody = document.querySelector("#gebruikerstabel tbody");
   const rij = document.createElement("tr");
@@ -99,36 +93,14 @@ function wijzigGebruikerSetup(gebruikers, gebruikerId) {
     tabelBody.innerHTML = tabelBody.innerHTML + rij.innerHTML;
   };
 
-  // data = {
-  //   id: gebruiker.id,
-  //   gebruikersnaam: document.getElementById("checkGebr").innerText,
-  //   wachtwoord: gebruiker.wachtwoord,
-  //   naam: document.getElementById("checkNaam").innerText,
-  //   adres: document.getElementById("checkAdre").innerText,
-  //   postcode: document.getElementById("checkPost").innerText,
-  //   geboortedatum: document.getElementById("checkGebo").innerText
-  // };
 
   console.log("wijzigen geclickt");
-  // console.log(rij)
-  // console.log(gebruikerId);
-  // console.log(rij.innerHTML);
-  // console.log(data);
 
-  // console.log(gebruiker.id);
-  // console.log("Wachtwoord: " + gebruiker.wachtwoord);
-  // console.log(document.getElementById("checkGebr").innerText);
-  // console.log(document.getElementById("checkNaam").innerText);
-  // console.log(document.getElementById("checkAdre").innerText);
-  // console.log(document.getElementById("checkPost").innerText);
-  // console.log(document.getElementById("checkGebo").innerText);
 };
 
 function wijzigGebruiker(gebrId, gebrWach) {
   console.log("Wijziging doorvoeren geclickt")
   console.log("id: " + gebrId);
-  console.log("wachtwoord: " + gebrWach);
-  // console.log(nummer);
 
   data = {
     id: gebrId,
