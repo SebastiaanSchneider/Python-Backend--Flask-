@@ -200,9 +200,6 @@ def api_read():
 @app.route('/api/delete/<gebruiker_id>')
 def gebruiker_delete(gebruiker_id):
     db = krijg_database()
-    gebruiker = db.execute('SELECT * FROM gebruikers WHERE id=?',
-                           (gebruiker_id, )).fetchone()
-
     db.cursor().execute('DELETE FROM gebruikers WHERE id=?',
                         (gebruiker_id, ))
     db.commit()
@@ -226,8 +223,6 @@ def api_update():
     if request.method == "POST":
         data = request.json['data']
         db = krijg_database()
-        gebruiker = db.execute('SELECT * FROM gebruikers WHERE id=?',
-                               (data["id"], )).fetchone()
         db.cursor().execute("""
                             UPDATE gebruikers
                             SET naam=?, adres=?, postcode=?, 
