@@ -1,25 +1,23 @@
 // app.js
-document.addEventListener('DOMContentLoaded', function() {
-    laadGebruikersData();
+document.addEventListener("DOMContentLoaded", function () {
+  laadGebruikersData();
 });
 
 function laadGebruikersData() {
-    // AJAX-request om gebruikersdata op te halen
-    
-    fetch('/api/gebruikers')
-        .then(response => response.json())
-        .then(gebruikers => toonGebruikersData(gebruikers));
-};
+  // AJAX-request om gebruikersdata op te halen
+  fetch("/api/gebruikers")
+    .then((response) => response.json())
+    .then((gebruikers) => toonGebruikersData(gebruikers));
+}
 
 function toonGebruikersData(gebruikers) {
-    // Dynamisch vullen van de tabel in de SPA
-    const tabelBody = document.querySelector('#gebruikerstabel tbody');
-    tabelBody.innerHTML = '';
+  // Dynamisch vullen van de tabel in de SPA
+  const tabelBody = document.querySelector("#gebruikerstabel tbody");
+  tabelBody.innerHTML = "";
 
-
-    gebruikers.forEach(gebruiker => {
-        const rij = document.createElement('tr');
-        rij.innerHTML = `
+  gebruikers.forEach((gebruiker) => {
+    const rij = document.createElement("tr");
+    rij.innerHTML = `
             <td>${gebruiker.id}</td>
             <td>${gebruiker.gebruikersnaam}</td>
             <td>${gebruiker.naam}</td>
@@ -31,12 +29,9 @@ function toonGebruikersData(gebruikers) {
                 <button onclick="verwijderGebruiker(${gebruiker.id}); location.reload()">Verwijderen</button>
             </td>
         `;
-        tabelBody.appendChild(rij);
-    });
-
-    console.log(document.getElementById("newUser"));
-};
-
+    tabelBody.appendChild(rij);
+  });
+}
 
 function verwijderGebruiker(gebruikerId) {
   // Implementeer logica voor het verwijderen van een gebruiker via AJAX
@@ -45,27 +40,24 @@ function verwijderGebruiker(gebruikerId) {
     .then((return_resp) =>
       alert("Succesvol gebruiker " + return_resp.id + " verwijderd.")
     );
-    laadGebruikersData();
-};
-
+  laadGebruikersData();
+}
 
 function wijzigGebruikersData(gebruikerId) {
   // AJAX-request om gebruikersdata op te halen
   fetch("/api/gebruikers")
     .then((response) => response.json())
     .then((gebruikers) => wijzigGebruikerSetup(gebruikers, gebruikerId));
-};
+}
 
-var wijzigCheck = 0
+// Los variabel om bij te houden of er een regel is toegevoegd om een gebruiker
+// te wijzigen
+var wijzigCheck = 0;
 
 function wijzigGebruikerSetup(gebruikers, gebruikerId) {
   // Implementeer logica voor het wijzigen van een gebruiker via AJAX
-
   var gebruiker = gebruikers[gebruikerId - 1];
-
   var data;
-
-  console.log(gebruiker);
 
   const tabelBody = document.querySelector("#gebruikerstabel tbody");
   const rij = document.createElement("tr");
@@ -81,27 +73,22 @@ function wijzigGebruikerSetup(gebruikers, gebruikerId) {
             </td>
         `;
 
+  // Check over er al een extra regel is toegevoegd
   if (wijzigCheck === 0) {
-    // maak nieuwe rij aan
+    // Maak nieuwe rij aan om gebruiker te wijzigen
     tabelBody.innerHTML = tabelBody.innerHTML + rij.innerHTML;
     wijzigCheck = 1;
   } else {
-    // vervang laatste lijn ipv toevoegen
+    // Vervang laatste lijn ipv toevoegen
     var table = document.querySelector("#gebruikerstabel tbody");
     var rowCount = table.rows.length;
     table.deleteRow(rowCount - 1);
     tabelBody.innerHTML = tabelBody.innerHTML + rij.innerHTML;
-  };
-
-
-  console.log("wijzigen geclickt");
-
-};
+  }
+}
 
 function wijzigGebruiker(gebrId, gebrWach) {
-  console.log("Wijziging doorvoeren geclickt")
-  console.log("id: " + gebrId);
-
+  // Haal data op uit de regel met te wijzigen gebruiker
   data = {
     id: gebrId,
     gebruikersnaam: document.getElementById("checkGebr").innerText,
@@ -112,8 +99,7 @@ function wijzigGebruiker(gebrId, gebrWach) {
     geboortedatum: document.getElementById("checkGebo").innerText,
   };
 
-  console.log(data);
-
+  // Voer data aan Python update functie
   fetch("/api/update", {
     method: "POST",
     headers: {
@@ -122,14 +108,11 @@ function wijzigGebruiker(gebrId, gebrWach) {
     body: JSON.stringify({ data: data }),
   })
     .then((response) => response.text())
-    .then((result) => {
-      console.log(result);
-      console.log("success")
-    });
-};
+    .then((result) => {});
+}
 
 document.addEventListener("submit", function () {
-  console.log("submitted")
+  // Bericht dat wijziging succesvol is uitgevoerd
   fetch("/api/read", {
     method: "POST",
   }).then(alert("Succesvol gebruiker aangemaakt."));
