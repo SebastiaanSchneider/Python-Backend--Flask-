@@ -167,6 +167,7 @@ def delete(gebruiker_id):
     # Weergave nieuwe pagina met melding
     return render_template("delete.html", gebruiker=gebruiker)
 
+
 # Functie om de database als json te kunnen gebruiken
 @app.route('/api/gebruikers')
 def gebruikers():
